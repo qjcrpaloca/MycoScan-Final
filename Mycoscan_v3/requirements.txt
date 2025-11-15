@@ -13,3 +13,4 @@ matplotlib
 requests
 pymysql
 cryptography
+gunicorn
