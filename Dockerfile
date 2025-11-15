@@ -1,25 +1,21 @@
-# Use official Python
 FROM python:3.10-slim
 
-# Set working directory inside the container
+# Set working directory
 WORKDIR /app
 
-# Copy requirements first (better caching)
-COPY Mycoscan_v3/requirements.txt /app/requirements.txt
-
 # Install dependencies
+COPY Mycoscan_v3/requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the whole project
 COPY Mycoscan_v3/ /app/
 
-# Set environment variables
+# Default port for local Docker; Render will override PORT at runtime
 ENV PORT=10000
 ENV PYTHONUNBUFFERED=1
 
-# Expose the port Render will use
+# Expose the port (for documentation / local use)
 EXPOSE 10000
 
-# Start the server using Gunicorn and your factory app
-# IMPORTANT: Do NOT include parentheses for factory functions
-CMD ["gunicorn", "--bind", "0.0.0.0:10000", "main:create_app()"]
+# Use Gunicorn and bind to the PORT env variable
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT main:create_app()"]
